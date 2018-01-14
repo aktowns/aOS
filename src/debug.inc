@@ -43,7 +43,7 @@ macro popaq {
     pop rax
 }
 
-macro print.sint num* {
+macro print.signed_int num* {
   local .loop, .done, .print
   pushaq
 
@@ -53,7 +53,6 @@ macro print.sint num* {
   cmp rax, 0 
   je .print
 
-  ;xor rdx, rdx
   mov r8, 10
   cqo
   idiv r8
@@ -77,6 +76,14 @@ macro print.sint num* {
   popaq
 }
 
+; print 
+;;;;;;;;;;
+; Writes the C string pointed by format to DEBUG0. If format includes format specifiers 
+; (subsequences beginning with %), the additional arguments following format are ;
+; formatted and inserted in the resulting string replacing their respective specifiers.
+;
+; fmt*    : format string, eg. "The number is %i" 
+; [args*] : arguments to the format string, eg 42
 macro print fmt*, [args*] {
   pushaq
   reverse push args
@@ -93,7 +100,9 @@ macro print fmt*, [args*] {
     cmp word [r8], '%c' ; char
     je .char
     cmp word [r8], '%i' ; number
-    je .numb
+    je .sint
+    cmp word [r8], '%u' ; todo: unsigned int
+    je .uint
 
     mov ax, [r8]
     out dx, ax 
@@ -107,9 +116,10 @@ macro print fmt*, [args*] {
     pop ax 
     out dx, ax
     jmp .rep
-  .numb: 
+  .uint:
+  .sint: 
     pop r9 
-    print.sint r9
+    print.signed_int r9
     jmp .rep
   .rep:
     add r8, 2
