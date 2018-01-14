@@ -6,7 +6,6 @@
 format elf64
 
 include 'multiboot.inc'
-include 'struct.inc'
 include 'debug.inc'
 
 extrn long_mode_start
