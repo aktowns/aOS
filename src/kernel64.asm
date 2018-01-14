@@ -40,10 +40,13 @@ long_mode_start:
   mov gs, ax
   mov esp, stack64_top
 
+
   dprint64 hello
 
   call setup.idt
-  
+
+  print "Hello %i or %i\n", 42, 1337
+
   ;dprint64 msg.itoa
 
   ;mov rdi, 1234567890 ; dword [itoa_num]
