@@ -43,7 +43,53 @@ macro popaq {
     pop rax
 }
 
+macro breakpoint {
+  xchg bx, bx
+}
+
 macro print.signed_int num* {
+  local .loop, .done, .print
+  pushaq
+
+  mov rax, num 
+  mov r11, num
+
+  mov r10, 0
+.loop:
+  cmp rax, 0 
+  je .negcheck
+
+  mov r8, 10
+  cqo
+  idiv r8
+
+  not rdx
+  add rdx, 49
+
+  push rdx
+  inc r10
+
+  jmp .loop 
+.negcheck:
+  test r11, r11 
+  jns .print
+  push '-'
+  inc r10
+.print:
+  cmp r10, 0
+  je .done
+
+  pop rax
+  mov dx, DEBUG0
+  out dx, ax
+
+  dec r10
+  jmp .print
+.done:
+  popaq
+}
+
+macro print.unsigned_int num* {
   local .loop, .done, .print
   pushaq
 
@@ -54,8 +100,8 @@ macro print.signed_int num* {
   je .print
 
   mov r8, 10
-  cqo
-  idiv r8
+  xor rdx, rdx
+  div r8
 
   add rdx, 48
   push rdx
@@ -99,9 +145,9 @@ macro print fmt*, [args*] {
     je .newline
     cmp word [r8], '%c' ; char
     je .char
-    cmp word [r8], '%i' ; number
+    cmp word [r8], '%i' ; signed int
     je .sint
-    cmp word [r8], '%u' ; todo: unsigned int
+    cmp word [r8], '%u' ; unsigned int
     je .uint
 
     mov ax, [r8]
@@ -117,6 +163,9 @@ macro print fmt*, [args*] {
     out dx, ax
     jmp .rep
   .uint:
+    pop r9 
+    print.unsigned_int r9
+    jmp .rep
   .sint: 
     pop r9 
     print.signed_int r9
