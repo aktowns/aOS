@@ -23,6 +23,7 @@ section '.data' writable
 hello db "Hello from 64bit! halting CPU", 0x0A, 0x0
 msg.itoa db "Testing itoa works properly 1234567890 is.. ", 0x0
 itoa_num dd 1234567890
+somenum dq -0x10
 
 section '.bss' writable
 store.itoa: 
@@ -44,7 +45,7 @@ long_mode_start:
 
   call setup.idt
 
-  print "Hello %u or %i\n", 42, -1337
+  print "Hello %u or %i maybe %c perhaps %i\n", 42, -1337, 'c', qword [somenum]
 
   ;dprint64 msg.itoa
 

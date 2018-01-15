@@ -122,6 +122,8 @@ macro print.unsigned_int num* {
   popaq
 }
 
+
+
 ; print 
 ;;;;;;;;;;
 ; Writes the C string pointed by format to DEBUG0. If format includes format specifiers 
@@ -149,6 +151,8 @@ macro print fmt*, [args*] {
     je .sint
     cmp word [r8], '%u' ; unsigned int
     je .uint
+    cmp word [r8], '%x' ; hexadecimal
+    je .hex
 
     mov ax, [r8]
     out dx, ax 
@@ -162,6 +166,7 @@ macro print fmt*, [args*] {
     pop ax 
     out dx, ax
     jmp .rep
+  .hex:
   .uint:
     pop r9 
     print.unsigned_int r9
